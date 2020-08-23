@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class CarListingCSVDto {
+public class CarListingCSVDTO {
 
     @CsvBindByName
     private String code;
@@ -23,7 +23,7 @@ public class CarListingCSVDto {
     private String model;
 
     @CsvBindByName
-    private int kW;
+    private int powerInPs;
 
     @CsvBindByName
     private int year;
