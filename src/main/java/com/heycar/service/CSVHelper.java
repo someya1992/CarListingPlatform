@@ -2,15 +2,18 @@ package com.heycar.service;
 
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.heycar.dto.CarListingCSVDTO;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,22 +36,36 @@ public class CSVHelper {
         return true;
     }
 
-    public static List<CarListingCSVDTO> parseCsvFile( MultipartFile file ) {
+    public static List<CarListingCSVDTO> csvToTutorials( InputStream is ) {
+        try( BufferedReader fileReader = new BufferedReader( new InputStreamReader( is, "UTF-8" ) );
 
-        CsvToBean<CarListingCSVDTO> csvToBean = null;
+                CSVParser csvParser = new CSVParser( fileReader,
+                                                     CSVFormat.DEFAULT.withQuote( '"' ).withFirstRecordAsHeader().withIgnoreHeaderCase()
+                                                             .withTrim() ); ) {
 
-        try( Reader reader = new BufferedReader( new InputStreamReader( file.getInputStream() ) ) ) {
+            List<CarListingCSVDTO> tutorials = new ArrayList<CarListingCSVDTO>();
 
-            csvToBean = new CsvToBeanBuilder( reader )
-                    .withType( CarListingCSVDTO.class )
-                    .withIgnoreLeadingWhiteSpace( true )
-                    .build();
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
+            for( CSVRecord csvRecord : csvRecords ) {
+                CarListingCSVDTO tutorial = new CarListingCSVDTO(
+                                                                  csvRecord.get( "code" ),
+                                                                  csvRecord.get( "make" ),
+                                                                  csvRecord.get( "model" ),
+                                                                  Integer.parseInt( csvRecord.get( "powerInPs" ) ),
+                                                                  Integer.parseInt( csvRecord.get( "year" ) ),
+                                                                  csvRecord.get( "color" ),
+                                                                  Double.parseDouble( csvRecord.get( "price" ) ) );
+
+                tutorials.add( tutorial );
+            }
+
+            return tutorials;
         }
-        catch( Exception ex ) {
-            log.error( ex.getMessage() );
+        catch( IOException e ) {
+            log.error( "fail to parse CSV file: " + e.getMessage()  );
+            throw new RuntimeException( "fail to parse CSV file: " + e.getMessage() );
         }
-        return csvToBean.parse();
     }
 
 }

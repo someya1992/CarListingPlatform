@@ -1,6 +1,7 @@
 package com.heycar.controller;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,12 +34,12 @@ public class DealerListingController {
 
     @PostMapping( value = "/upload_csv/{dealerId}" )
     public ResponseEntity<String> uploadListing( @RequestParam( "file" ) MultipartFile file,
-                                                 @PathVariable String dealerId ) throws FileEmptyException {
+                                                 @PathVariable String dealerId ) throws FileEmptyException, IOException {
 
         if( !CSVHelper.hasCSVFormat( file ) ) {
             throw new FileEmptyException( "File is empty or invalid format" );
         }
-        List<CarListing> carListing = CSVHelper.parseCsvFile( file ).stream().map( mapper::mapFromCSVDTO ).collect( Collectors.toList() );
+        List<CarListing> carListing = CSVHelper.csvToTutorials( file.getInputStream() ).stream().map( mapper::mapFromCSVDTO ).collect( Collectors.toList() );
 
         service.createOrUpdateListing( carListing, Long.valueOf( dealerId ) );
 

@@ -14,25 +14,24 @@ import lombok.Setter;
 @Getter
 public class CarListingCSVDTO {
 
-    @CsvBindByName
+   
     private String code;
 
-    @CsvBindByName
+    
     private String make;
 
-    @CsvBindByName
+   
     private String model;
 
-    @CsvBindByName
+
     private int powerInPs;
 
-    @CsvBindByName
     private int year;
 
-    @CsvBindByName
+
     private String color;
 
-    @CsvBindByName
+
     private double price;
 
 }

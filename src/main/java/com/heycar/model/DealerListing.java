@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,15 +22,14 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "dealer_listing")
+@Table( name = "dealer_listing" )
 public class DealerListing {
-    
+
     @Id
     @GeneratedValue( strategy = IDENTITY )
     @Column( name = "id" )
     private Long id;
-    
-    private Long dealerId; 
-    
+
+    private Long dealerId;
 
 }
