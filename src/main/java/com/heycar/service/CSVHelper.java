@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.heycar.dto.CarListingCSVDTO;
+import com.heycar.exceptions.FileParsingException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +37,7 @@ public class CSVHelper {
         return true;
     }
 
-    public static List<CarListingCSVDTO> csvToTutorials( InputStream is ) {
+    public static List<CarListingCSVDTO> csvToObject( InputStream is ) throws FileParsingException {
         try( BufferedReader fileReader = new BufferedReader( new InputStreamReader( is, "UTF-8" ) );
 
                 CSVParser csvParser = new CSVParser( fileReader,
@@ -63,8 +64,8 @@ public class CSVHelper {
             return tutorials;
         }
         catch( IOException e ) {
-            log.error( "fail to parse CSV file: " + e.getMessage()  );
-            throw new RuntimeException( "fail to parse CSV file: " + e.getMessage() );
+            log.error( "fail to parse CSV file: " + e.getMessage() );
+            throw new FileParsingException( "fail to parse CSV file: " + e.getMessage() );
         }
     }
 

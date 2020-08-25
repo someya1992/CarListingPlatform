@@ -1,6 +1,8 @@
 package com.heycar.controller;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heycar.dto.CarListingDTO;
@@ -58,13 +59,18 @@ public class CarListingControllerTest {
     @Test
     public void getListing_whenValidInput_returns200() throws Exception {
 
-        MvcResult mvcResult =  mockMvc.perform( get( "/search" ).queryParam( "color", COLOR ).queryParam( "make", MAKE ).queryParam( "model", MODEL )
-                .queryParam( "year", "2014" )
-                .contentType( "application/json" ) )
+        when( listingService.getListing( COLOR, MAKE, MODEL, YEAR ) ).thenReturn( getCarListingDTO() );
+
+        CarListingsDTO mvcResult = objectMapper.readValue( mockMvc
+                .perform( get( "/search" ).queryParam( "color", COLOR ).queryParam( "make", MAKE ).queryParam( "model", MODEL )
+                        .queryParam( "year", "2016" )
+                        .contentType( "application/json" ) )
                 .andExpect( status().isOk() )
-                .andReturn();
-        
-        
+                .andReturn().getResponse().getContentAsByteArray(),
+                                                           CarListingsDTO.class );
+
+        assertEquals( mvcResult.getCarListingList().size(), getCarListingDTO().getCarListingList().size() );
+
     }
 
     private CarListingsDTO getCarListingDTO() {

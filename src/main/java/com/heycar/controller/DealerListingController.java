@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.heycar.dto.CarListingDTO;
-import com.heycar.exceptions.FileEmptyException;
+import com.heycar.dto.CarListingsDTO;
+import com.heycar.exceptions.FileParsingException;
 import com.heycar.mapper.ListingMapper;
 import com.heycar.model.CarListing;
 import com.heycar.service.CSVHelper;
@@ -33,13 +33,14 @@ public class DealerListingController {
     private final ListingMapper mapper;
 
     @PostMapping( value = "/upload_csv/{dealerId}" )
-    public ResponseEntity<String> uploadListing( @RequestParam( "file" ) MultipartFile file,
-                                                 @PathVariable String dealerId ) throws FileEmptyException, IOException {
+    public ResponseEntity uploadListing( @RequestParam( "file" ) MultipartFile file,
+                                                 @PathVariable String dealerId ) throws FileParsingException, IOException {
 
         if( !CSVHelper.hasCSVFormat( file ) ) {
-            throw new FileEmptyException( "File is empty or invalid format" );
+            throw new FileParsingException( "File is empty or invalid format" );
         }
-        List<CarListing> carListing = CSVHelper.csvToTutorials( file.getInputStream() ).stream().map( mapper::mapFromCSVDTO ).collect( Collectors.toList() );
+        List<CarListing> carListing = CSVHelper.csvToObject( file.getInputStream() ).stream().map( mapper::mapFromCSVDTO )
+                .collect( Collectors.toList() );
 
         service.createOrUpdateListing( carListing, Long.valueOf( dealerId ) );
 
@@ -47,10 +48,10 @@ public class DealerListingController {
     }
 
     @PostMapping( path = "/vehicleListings/{dealerId}", consumes = "application/json" )
-    public ResponseEntity<String> addListing( @RequestBody List<CarListingDTO> carListing, @PathVariable String dealerId ) {
+    public ResponseEntity<String> addListing( @RequestBody CarListingsDTO carListingDTO, @PathVariable String dealerId ) {
 
-        List<CarListing> list = carListing.stream().map( mapper::mapToEntity ).collect(
-                                                                                        Collectors.toList() );
+        List<CarListing> list = carListingDTO.getCarListingList().stream().map( mapper::mapToEntity ).collect(
+                                                                                                               Collectors.toList() );
 
         service.createOrUpdateListing( list, Long.valueOf( dealerId ) );
 
