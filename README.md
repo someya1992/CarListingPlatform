@@ -7,7 +7,7 @@ Problem Statement: Design and implement a platform to upload car listing from di
 - Dealer-id must be part of /vehicle_listings/ endpoint as well, so that car with same code from different listing could be 
   identified by dealer
   
-- since same car listing can belong to different dealer so car listing must be mapped to dealer id
+- Since same car listing can belong to different dealer so car listing must be mapped to dealer id
 
 - No unique fields to specified to identify if the car listing already exist
 
@@ -24,15 +24,15 @@ Problem Statement: Design and implement a platform to upload car listing from di
 
 - added dealer-id to each point so that listing can be identified by dealer-id
 
-- mapped car listing with dealer-id
+- mapped car listing with dealer-id (used many to one mapping)
 
-- fetch car listing by code and dealerId  
+- Fetch car listing by code and dealerId to uniquely identify the car
 
 ('better solution that could be implemented' : to make code and dealer Id as unique key and saveOrupdare data this would save database calls and could use batch processing )
 
-- if dealer does not exist then add dealers
+- if dealer does not exist then add dealers (better approach - dealer should be already registered before uploading listing)
 
-- added exceptions if data is incorrect or missing
+- Added exceptions if data is incorrect or missing
 
 
 ### Ideas that can be implemented
