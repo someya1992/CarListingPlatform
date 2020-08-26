@@ -1,6 +1,7 @@
 package com.heycar.service;
 
 
+import static java.util.Collections.singleton;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,6 +54,7 @@ public class DealerListingServiceTest {
     private static final String MAKE = "Renault";
     private static final String MODEL = "a-65";
     private static final String COLOR = "Black";
+    private static final String COLOR_2 = "red";
     private static final String CODE = "a";
     private static final int KW = 200;
     private static final int YEAR = 2016;
@@ -63,7 +65,7 @@ public class DealerListingServiceTest {
     private void createOrUpdateListing_listNotPresent_created() {
 
         when( dealerListingrepository.findByDealerId( DEALER_ID ) ).thenReturn( Optional.of( getDealerListing() ) );
-        when( carListingrepository.findByCodeAndDealerId( CODE, DEALER_ID ) ).thenReturn( Optional.of( getCarListing() ) );
+        when( carListingrepository.findByCodeAndDealerId( CODE, DEALER_ID ) ).thenReturn( Optional.empty() );
 
         dealerListingService.createOrUpdateListing( getCarListingList(), DEALER_ID );
 
@@ -76,6 +78,22 @@ public class DealerListingServiceTest {
 
     }
 
+    @Test
+    private void createOrUpdateListing_listNotPresent_updated() {
+
+        when( dealerListingrepository.findByDealerId( DEALER_ID ) ).thenReturn( Optional.of( getDealerListing() ) );
+        when( carListingrepository.findByCodeAndDealerId( CODE, DEALER_ID ) ).thenReturn( Optional.of( getCarListing() ) );
+
+        dealerListingService.createOrUpdateListing( (List<CarListing>) singleton( getUpdatedCarListing() ), DEALER_ID );
+
+        verify( dealerListingrepository ).findByDealerId( DEALER_ID );
+        verify( carListingrepository ).findByCodeAndDealerId( CODE, DEALER_ID );
+        verify( dealerListingrepository ).save( Mockito.any() );
+        verify( carListingrepository ).save( carListingCaptor.capture() );
+
+        assertEquals( carListingCaptor.getValue().getColor(), getCarListing().getColor() );
+
+    }
 
     private List<CarListing> getCarListingList() {
 
@@ -92,6 +110,24 @@ public class DealerListingServiceTest {
         CarListing listing = new CarListing();
         listing.setCode( CODE );
         listing.setColor( COLOR );
+        listing.setKW( KW );
+        listing.setMake( MAKE );
+        listing.setModel( MODEL );
+        listing.setPrice( PRICE );
+        listing.setYear( YEAR );
+        listing.setDealerListing( dealerListing );
+
+        return listing;
+
+    }
+
+    private CarListing getUpdatedCarListing() {
+        DealerListing dealerListing = new DealerListing();
+        dealerListing.setDealerId( 1l );
+
+        CarListing listing = new CarListing();
+        listing.setCode( CODE );
+        listing.setColor( COLOR_2 );
         listing.setKW( KW );
         listing.setMake( MAKE );
         listing.setModel( MODEL );

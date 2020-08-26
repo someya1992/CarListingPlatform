@@ -33,7 +33,7 @@ public class DealerListingController {
     private final ListingMapper mapper;
 
     @PostMapping( value = "/upload_csv/{dealerId}" )
-    public ResponseEntity uploadListing( @RequestParam( "file" ) MultipartFile file,
+    public ResponseEntity<String> uploadListing( @RequestParam( "file" ) MultipartFile file,
                                                  @PathVariable String dealerId ) throws FileParsingException, IOException {
 
         if( !CSVHelper.hasCSVFormat( file ) ) {
