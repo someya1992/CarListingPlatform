@@ -62,7 +62,6 @@ public class DealerListingControllerIntegrationTest {
     }
 
     // @Sql( { "schema.sql", "data.sql" } )
-    @Test
     @Ignore
     public void uploadVehicleListing() {
 
